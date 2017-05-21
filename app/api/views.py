@@ -29,7 +29,7 @@ def internal_error(error):
 
 @bp.route('/')
 def index():
-	resp = jsonify(get_usage_hints())
+	resp = jsonify(get_api_description())
 	return resp, 200
 
 
