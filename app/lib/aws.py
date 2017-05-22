@@ -2,7 +2,7 @@ import boto3
 import os
 
 class AwsEc2(object):
-    # methods for spawning and destroying ssh capable aws instances
+    # methods for spawning and destroying ssh capable ec2 instances
 
     def deploy_aws_instance(self,publickey):
         ins = self.ec2.create_instances(
@@ -11,6 +11,12 @@ class AwsEc2(object):
                 MaxCount=1,
                 InstanceType='t2.micro'
             )
+        while True:
+            i = self.ec2.Instance(id=ins[0].id)
+            if i.state['Name'] != 'running':
+                pass
+            else:
+                return i.public_ip_address
         return ins[0].id
 
     def destroy_aws_instance(self,ip):
