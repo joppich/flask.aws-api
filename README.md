@@ -14,7 +14,7 @@
 ```
 ### 2. Set up aws-client config
 ```lang=shell
-    # requires key-id and secret key
+    # requires key-id and secret key with full ec2 authorization
     # choose location and output format
     $ aws configure
 ```
