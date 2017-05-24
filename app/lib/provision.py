@@ -4,12 +4,12 @@
 
 import paramiko
 import crypt
+import os
 
-
-configure_sshd = "sudo sed -i s/'PasswordAuthentication no'/'PasswordAuthentication yes'/g /etc/ssh/sshd_config"
+configure_sshd = "sudo sed -i s/'PasswordAuthentication no'/'PasswordAuthentication yes'/g /etc/ssh/sshd_config && sudo service sshd restart"
 
 def add_user(username,password):
-    s = "sudo useradd -m -p {pw} {uname}"
+    s = "sudo useradd -m -p '{pw}' {uname}"
     pwd = crypt.crypt(password, crypt.mksalt(crypt.METHOD_SHA512))
     return s.format(pw=pwd,uname=username)
 

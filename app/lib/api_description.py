@@ -1,11 +1,11 @@
 
 HEADER = "API for spawning and destroying ssh-capable aws-instances."
 
-CREATE = "[GET] :: '/create/<public-key>' ::"+\
-"The instance will be accessible by key provided here."
+CREATE = "[POST] :: '/create/' ::"+\
+"Post a dictionary with fields username and password. The instance will be accessible by these credentials."
 
 DESTROY = "[GET] :: '/destroy/<instance-ip>' ::"+\
-"Shutdown instance at given IP."
+"Shutdown instance at given IP and clean up."
 
 
 def get_api_description():

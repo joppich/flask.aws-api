@@ -1,5 +1,6 @@
 import os
 import boto3
+import time
 from uuid import uuid4
 
 from .provision import configure_sshd, add_user, run_command
@@ -29,11 +30,12 @@ class AwsEc2(object):
             if i.state['Name'] != 'running':
                 pass
             else:
+                time.sleep(30)
                 run_command(configure_sshd,
-                            i.keyname,
+                            i.key_name,
                             i.public_ip_address)
                 run_command(add_user(username,password),
-                            i.keyname,
+                            i.key_name,
                             i.public_ip_address)
                 return dict(ip=i.public_ip_address)
         return -1
