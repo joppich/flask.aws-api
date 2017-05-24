@@ -1,22 +1,50 @@
 from flask import request, jsonify
 
 from . import bp
-from app.lib.api_description import get_api_description
-from app.lib.aws import AwsEc2
+from ..auth import auth
+from ..lib.api_description import get_api_description
+from ..lib.aws import AwsEc2
 
 # Set up api-appropriate errorhandling
 
 @bp.errorhandler(404)
-def not_found(error):
+def not_found():
     resp = jsonify({'code':404,'message':'Resource not found'})
     return resp, 404
 
+
 @bp.errorhandler(500)
-def internal_error(error):
+def internal_error():
     resp = jsonify({'code':500,
-                    'message':'An internal Error occurred.\
-                     Please contact an administrator.'})
+                    'message':'An internal Error occurred.'})
     return resp, 500
+
+
+@bp.errorhandler(400)
+def bad_request():
+    resp = jsonify({'code':400,
+                    'message':'Malformed request.'})
+    return resp, 400
+
+
+@auth.error_handler
+def unauthorized():
+    resp = jsonify({'code':403,
+                    'error':'Forbidden'})
+    return resp, 403
+
+
+"""
+API Endpoints
+"""
+
+@bp.before_request
+@auth.login_required
+def before_request():
+    """
+    Guard all api endpoints
+    """
+    pass
 
 
 # Set up routes for api-description, aws instance deployment, aws instance shutdown
@@ -27,14 +55,20 @@ def index():
     return resp, 200
 
 
-@bp.route('/create/<string:pubkey>')
-def create_instance(pubkey):
+@bp.route('/create', methods=['POST'])
+def create_instance():
+    credentials = request.get_json(force=True)
+    try:
+        username = credentials['username']
+        password = credentials['password']
+    except:
+        return bad_request()
     aws = AwsEc2()
     try:
-        id_ = aws.deploy_aws_instance(pubkey)
+        result = aws.deploy_aws_instance(username,password)
     except:
-        return 500
-    resp = jsonify({'booting':str(id_)})
+        return internal_error()
+    resp = jsonify({'booting':result})
     return resp, 200
 
 
@@ -44,6 +78,6 @@ def destroy_instance(ip):
     try:
         id_ = aws.destroy_aws_instance(ip)
     except:
-        return 500
+        return internal_error()
     resp = jsonify({'terminating':str(id_)})
     return resp, 200
