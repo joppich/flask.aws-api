@@ -35,7 +35,7 @@ For builtin werkzeug dev server, run
 ```
 Or with gunicorn, configured to your liking, do
 ```lang=shell
-    $ gunicorn -b 0.0.0.0:5000 run:app
+    $ gunicorn -t 120 -b 0.0.0.0:5000 run:app
 ```
 ## Usage Example
 Spawn instance
